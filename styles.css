@@ -1,0 +1,103 @@
+:root {
+  --red: rgb(255, 66, 69);
+  --orange: rgb(255, 146, 48);
+  --yellow: rgb(255, 214, 0);
+  --green: rgb(48, 209, 88);
+  --mint: rgb(0, 218, 195);
+  --teal: rgb(0, 210, 224);
+  --cyan: rgb(60, 211, 254);
+  --blue: rgb(0, 145, 255);
+  --indigo: rgb(107, 93, 255);
+  --purple: rgb(219, 52, 242);
+  --pink: rgb(255, 55, 95);
+  --brown: rgb(183, 138, 102);
+
+  --white: rgb(242, 242, 247);
+  --gray: rgb(142, 142, 147);
+  --black: rgb(28, 28, 30);
+}
+
+body {
+  box-sizing: border-box;
+  font-family: "JetBrains Mono", monospace;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 24px;
+
+  color: var(--white);
+  background: var(--black);
+}
+
+h1 {
+  font-size: 2.5em;
+}
+
+h2 {
+  font-size: 2em;
+}
+
+h3 {
+  font-size: 1.5em;
+}
+
+p {
+  font-size: 1em;
+}
+
+.container {
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  overflow-y: auto;
+}
+
+#image-dropzone {
+  width: 80%;
+  height: 10em;
+  border: 1px dashed var(--mint);
+  border-radius: 16px;
+  padding: 1em 1em;
+
+  color: var(--gray);
+  text-align: center;
+}
+
+#image-dropzone.hover {
+  border: 4px solid var(--green);
+}
+
+#image-thumbnail {
+  width: 80%;
+  height: auto;
+}
+
+table {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  table-layout: fixed;
+  padding: 1em 1em;
+  border-collapse: collapse;
+}
+
+#image-data tr {
+  border-bottom: 1px dotted var(--gray);
+}
+
+#image-data td:first-child {
+  text-align: left;
+  color: var(--gray);
+  width: 30%;
+  font-weight: 300;
+}
+
+#image-data td:last-child {
+  text-align: right;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  width: 70%;
+}
