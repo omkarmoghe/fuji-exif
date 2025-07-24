@@ -1,5 +1,3 @@
-const SKIP_TAGS = ["MakerNote", "UserComment"];
-
 const FUJIFILM_EXIF_TAGS = {
   0: "Exif.Fujifilm.Version",
   16: "Exif.Fujifilm.SerialNumber",
@@ -93,69 +91,183 @@ const FUJIFILM_EXIF_TAGS = {
   61456: "Exif.Fujifilm.VignettingParams",
 };
 
-const dropZone = document.getElementById("image-dropzone");
-const imageData = document.getElementById("image-data");
-const thumbnail = document.getElementById("image-thumbnail");
+const FUJIFILM_TYPE_SIZES = {
+  1: 1, // BYTE
+  2: 1, // ASCII
+  3: 2, // SHORT
+  4: 4, // LONG
+  5: 8, // RATIONAL (two LONGs)
+  7: 1, // UNDEFINED
+  9: 4, // SLONG
+  10: 8, // SRATIONAL
+};
 
-// Prevent default drag behaviors
-["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
-  dropZone.addEventListener(eventName, (e) => e.preventDefault());
-});
+const FUJIFILM_EXIF_VALUE_MAP = {
+  "Exif.Fujifilm.Quality": {
+    "NORMAL ": "Normal",
+    "FINE   ": "Fine",
+    "BASIC  ": "Basic",
+  },
+  "Exif.Fujifilm.Sharpness": {
+    128: "Soft",
+    130: "Standard",
+    132: "Hard",
+  },
+  "Exif.Fujifilm.WhiteBalance": {
+    0: "Auto",
+    256: "Daylight",
+    512: "Cloudy",
+    768: "Incandescent",
+    769: "Fluorescent 1",
+    770: "Fluorescent 2",
+    3840: "Kelvin",
+    10000: "Custom Kelvin", // some cameras report direct K temperatures :contentReference[oaicite:1]{index=1}
+  },
+  "Exif.Fujifilm.Color": {
+    0: "Standard Saturation",
+    128: "Medium High",
+    192: "High",
+    224: "Very High",
+    256: "Chrome",
+    512: "Black & White",
+    769: "B&W + Yellow Filter",
+    770: "B&W + Red Filter",
+    771: "B&W + Green Filter",
+    784: "B&W Sepia",
+    1280: "Acros",
+    1281: "Acros + Red Filter",
+    1282: "Acros + Yellow Filter",
+    1283: "Acros + Green Filter",
+  },
+  "Exif.Fujifilm.Tone": {
+    0: "Standard",
+    128: "Low",
+    256: "High",
+  },
+  "Exif.Fujifilm.Contrast": {
+    0: "Normal",
+    1: "High",
+    2: "Low",
+  },
+  "Exif.Fujifilm.WhiteBalanceFineTune": (value) => {
+    if (Array.isArray(value) && value.length >= 2) {
+      const [r, b] = value;
+      // exiftool encodes red and blue shifts in 1/20-deg steps: raw value /20 :contentReference[oaicite:2]{index=2}
+      return `R ${r / 20 >= 0 ? "+" : ""}${r / 20}, B ${
+        b / 20 >= 0 ? "+" : ""
+      }${b / 20}`;
+    }
+    return value;
+  },
+  "Exif.Fujifilm.NoiseReduction": {
+    0: "Off",
+    128: "Low",
+    256: "Normal",
+    384: "High",
+  },
+  "Exif.Fujifilm.HighIsoNoiseReduction": {
+    0: "Off",
+    128: "Weak",
+    256: "Normal",
+    384: "Strong",
+  },
+  "Exif.Fujifilm.Clarity": (v) => (v / 1000).toFixed(1),
+  "Exif.Fujifilm.HighlightTone": (v) => (v / 16).toFixed(2),
+  "Exif.Fujifilm.ShadowTone": (v) => (v / 16).toFixed(2),
+  "Exif.Fujifilm.PictureMode": {
+    0: "Auto",
+    1: "Portrait",
+    2: "Landscape",
+    3: "Macro",
+    4: "Sports",
+    5: "Night Scene",
+    6: "Program AE",
+    7: "Natural Light",
+    8: "Anti-blur",
+    9: "Beach & Snow",
+    10: "Sunset",
+    11: "Museum",
+    12: "Party",
+    13: "Flower",
+    14: "Text",
+    15: "Natural Light & Flash",
+    16: "Beach",
+    17: "Snow",
+    18: "Fireworks",
+    19: "Underwater",
+    256: "Standard",
+    257: "Chrome",
+    258: "B&W",
+    272: "Astia",
+    512: "Provia",
+    513: "Velvia",
+    514: "Classic Chrome",
+    768: "Pro Neg. Standard",
+    769: "Pro Neg. Hi",
+    1024: "Monochrome",
+    1025: "Monochrome + Yellow Filter",
+    1026: "Monochrome + Red Filter",
+    1027: "Monochrome + Green Filter",
+    1280: "Sepia",
+  },
+  "Exif.Fujifilm.DynamicRange": {
+    1: "Standard",
+    3: "200%",
+    4: "400%",
+  },
+  "Exif.Fujifilm.DynamicRangeSetting": {
+    1: "Auto",
+    3: "200%",
+    4: "400%",
+  },
+  // Color Chrome Effect (original)
+  "Exif.Fujifilm.ColorChromeEffect": {
+    0: "Off",
+    32: "Weak",
+    64: "Strong",
+  },
 
-// Add visual feedback
-["dragenter", "dragover"].forEach((eventName) => {
-  dropZone.addEventListener(eventName, () => dropZone.classList.add("hover"));
-});
+  // Color Chrome Effect (Blue variant)
+  "Exif.Fujifilm.ColorChromeFXBlue": {
+    0: "Off",
+    32: "Weak",
+    64: "Strong",
+  },
 
-["dragleave", "drop"].forEach((eventName) => {
-  dropZone.addEventListener(eventName, () =>
-    dropZone.classList.remove("hover")
-  );
-});
+  // Grain Effect Roughness (similar pattern)
+  "Exif.Fujifilm.GrainEffectRoughness": {
+    0: "Off",
+    32: "Weak",
+    64: "Strong",
+  },
 
-function updateImageData(exifData) {
-  // Clear previous data
-  imageData.innerHTML = "";
-
-  // Add each EXIF property as a table row
-  for (const tag in exifData) {
-    const value = exifData[tag];
-    if (SKIP_TAGS.includes(tag)) continue;
-    if (value === undefined || value === null) continue;
-
-    const row = document.createElement("tr");
-    const keyCell = document.createElement("td");
-    keyCell.textContent = tag.replace(/([a-z])([A-Z])/g, "$1 $2").toUpperCase();
-
-    const valueCell = document.createElement("td");
-    valueCell.textContent = value.toString();
-
-    row.appendChild(keyCell);
-    row.appendChild(valueCell);
-    imageData.appendChild(row);
-  }
-}
-
-function updateThumbnail(exifData) {
-  if (exifData.thumbnail) {
-    thumbnail.src = URL.createObjectURL(exifData.thumbnail.blob);
-    thumbnail.hidden = false;
-  } else {
-    thumbnail.hidden = true;
-  }
-}
+  // Grain Effect Size
+  "Exif.Fujifilm.GrainEffectSize": {
+    0: "Off",
+    16: "Small",
+    32: "Large",
+  },
+  "Exif.Fujifilm.FilmMode": {
+    0: "F0 / Provia / Standard",
+    256: "F1 / Studio Portrait",
+    272: "F1a / Studio Portrait Enhanced Saturation",
+    288: "F1b / Studio Portrait Smooth Skin Tone (Astia)",
+    304: "F1c / Studio Portrait Increased Sharpness",
+    512: "F2 / Fujichrome (Velvia)",
+    768: "F3 / Studio Portrait EX",
+    1024: "F4 / Velvia",
+    1280: "F5 / Pro Neg. Standard",
+    1281: "F6 / Pro Neg. Hi",
+    1536: "F7 / Classic Chrome",
+    1792: "F8 / Eterna",
+    2048: "F9 / Classic Negative",
+    2304: "F10 / Bleach Bypass",
+    2560: "F11 / Nostalgic Negative",
+  },
+};
 
 function parseFujifilmExif(exifData) {
-  const TYPE_SIZES = {
-    1: 1, // BYTE
-    2: 1, // ASCII
-    3: 2, // SHORT
-    4: 4, // LONG
-    5: 8, // RATIONAL (two LONGs)
-    7: 1, // UNDEFINED
-    9: 4, // SLONG
-    10: 8, // SRATIONAL
-  };
+  const OFFSET = 12;
 
   // Check if the MakerNote is present
   if (exifData.MakerNote) {
@@ -169,14 +281,30 @@ function parseFujifilmExif(exifData) {
     let offset = 2;
 
     for (let i = 0; i < tagCount; i++) {
+      // Check bounds
+      if (offset + OFFSET > uint8Array.length) {
+        console.warn(
+          `Entry ${i} at offset ${offset} is out of bounds; parsing stopped.`
+        );
+        break;
+      }
+
       const tag = view.getUint16(offset, true);
       const type = view.getUint16(offset + 2, true);
       const count = view.getUint32(offset + 4, true);
-      const valueOffset = view.getUint32(offset + 8, true);
+      // Check type is valid
+      if (!(type in FUJIFILM_TYPE_SIZES)) {
+        console.warn(
+          `Skipping tag 0x${tag.toString(16)}: invalid type ${type}`
+        );
+        offset += OFFSET;
+        continue;
+      }
 
+      const valueOffset = view.getUint32(offset + 8, true);
       const key = FUJIFILM_EXIF_TAGS[tag] || `Unknown_0x${tag.toString(16)}`;
 
-      const size = TYPE_SIZES[type] || 1;
+      const size = FUJIFILM_TYPE_SIZES[type] || 1;
       const totalBytes = size * count;
 
       let value;
@@ -228,54 +356,36 @@ function parseFujifilmExif(exifData) {
       }
 
       result[key] = value;
-      offset += 12;
+      offset += OFFSET;
     }
 
     return result;
   }
 }
 
-function processFile(file) {
-  if (file && file.type.startsWith("image/")) {
-    const reader = new FileReader();
+function normalizeFujifilmExif(exifData) {
+  const normalized = {};
 
-    reader.onload = function (event) {
-      const arrayBuffer = event.target.result;
+  for (const tag in exifData) {
+    if (!tag.match(/^Exif\.Fujifilm\./)) continue; // Only process Fujifilm tags
 
-      // Pass it to exif-js
-      const exifData = EXIF.readFromBinaryFile(arrayBuffer);
+    const value = exifData[tag];
+    if (value === undefined || value === null) continue;
 
-      updateThumbnail(exifData);
-      updateImageData(exifData);
-      const fxf = parseFujifilmExif(exifData);
-      debugger; // TODO
-    };
+    const normalizedTag = tag.split(".").pop();
 
-    reader.readAsArrayBuffer(file);
-  } else {
-    alert("Please select an image file.");
+    // Map known tags to human-readable values
+    if (FUJIFILM_EXIF_VALUE_MAP[tag]) {
+      const mapping = FUJIFILM_EXIF_VALUE_MAP[tag];
+
+      normalized[normalizedTag] =
+        typeof mapping === "function"
+          ? mapping(value)
+          : mapping[value] || value;
+    } else {
+      normalized[normalizedTag] = value;
+    }
   }
+
+  return normalized;
 }
-
-// Handle dropped files
-dropZone.addEventListener("drop", (e) => {
-  const file = e.dataTransfer.files[0];
-  processFile(file);
-});
-
-// Handle click to open file dialog
-dropZone.addEventListener("click", () => {
-  const input = document.createElement("input");
-  input.type = "file";
-  input.accept = "image/*";
-  input.style.display = "none";
-
-  input.onchange = (e) => {
-    const file = e.target.files[0];
-    processFile(file);
-  };
-
-  document.body.appendChild(input);
-  input.click();
-  document.body.removeChild(input);
-});
