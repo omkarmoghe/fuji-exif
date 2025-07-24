@@ -172,8 +172,8 @@ const FUJIFILM_EXIF_VALUE_MAP = {
     384: "Strong",
   },
   "Exif.Fujifilm.Clarity": (v) => (v / 1000).toFixed(1),
-  "Exif.Fujifilm.HighlightTone": (v) => (v / 16).toFixed(2),
-  "Exif.Fujifilm.ShadowTone": (v) => (v / 16).toFixed(2),
+  "Exif.Fujifilm.HighlightTone": (v) => (v / 16).toFixed(1),
+  "Exif.Fujifilm.ShadowTone": (v) => (v / 16).toFixed(1),
   "Exif.Fujifilm.PictureMode": {
     0: "Auto",
     1: "Portrait",

@@ -71,7 +71,7 @@ p {
   border: 4px solid var(--green);
 }
 
-#image-thumbnail {
+#image-preview {
   width: 80%;
   height: auto;
 }

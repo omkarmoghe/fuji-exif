@@ -2,7 +2,7 @@ const SKIP_TAGS = ["MakerNote", "UserComment", "Thumbnail"];
 
 const dropZone = document.getElementById("image-dropzone");
 const imageData = document.getElementById("image-data");
-const thumbnail = document.getElementById("image-thumbnail");
+const preview = document.getElementById("image-preview");
 
 // Prevent default drag behaviors
 ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
@@ -43,12 +43,12 @@ function updateImageData(exifData) {
   }
 }
 
-function updateThumbnail(exifData) {
-  if (exifData.thumbnail) {
-    thumbnail.src = URL.createObjectURL(exifData.thumbnail.blob);
-    thumbnail.hidden = false;
+function updatePreview(file) {
+  if (file) {
+    preview.src = URL.createObjectURL(file);
+    preview.hidden = false;
   } else {
-    thumbnail.hidden = true;
+    preview.hidden = true;
   }
 }
 
@@ -89,12 +89,16 @@ function processFile(file) {
       // Pass it to exif-js
       const exifData = EXIF.readFromBinaryFile(arrayBuffer);
 
-      updateThumbnail(exifData);
+      updatePreview(file);
       updateImageData(exifData);
 
       const fujifilmExifData = parseFujifilmExif(exifData);
-      const normalizedFujifilmData = normalizeFujifilmExif(fujifilmExifData);
-      updateFujifilmData(normalizedFujifilmData);
+      if (!!fujifilmExifData) {
+        const normalizedFujifilmData = normalizeFujifilmExif(fujifilmExifData);
+        updateFujifilmData(normalizedFujifilmData);
+      } else {
+        console.warn("No Fujifilm EXIF data found");
+      }
     };
 
     reader.readAsArrayBuffer(file);
