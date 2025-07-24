@@ -23,10 +23,15 @@ body {
   font-optical-sizing: auto;
   font-weight: 400;
   font-style: normal;
-  font-size: 24px;
+  font-size: 32px;
 
   color: var(--white);
   background: var(--black);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
 }
 
 h1 {
@@ -46,7 +51,7 @@ p {
 }
 
 .container {
-  width: 100%;
+  max-width: 90%;
   height: auto;
   display: flex;
   flex-direction: column;
@@ -103,4 +108,14 @@ table td:last-child {
   overflow-wrap: break-word;
   width: 65%;
   padding-right: 1em;
+}
+
+@media only screen and (min-width: 820px) {
+  body {
+    font-size: 24px;
+  }
+
+  .container {
+    max-width: 70%;
+  }
 }
