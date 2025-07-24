@@ -42,6 +42,7 @@ h1 {
 }
 
 h2 {
+  align-self: flex-start;
   font-size: 2em;
   font-weight: 300;
   margin-top: 0.4em;
@@ -49,6 +50,7 @@ h2 {
 }
 
 h3 {
+  align-self: flex-start;
   font-size: 1.5em;
   font-weight: 300;
   margin-top: 0.25em;
@@ -124,6 +126,11 @@ table td:last-child {
   overflow-wrap: break-word;
   width: 65%;
   padding-right: 1em;
+}
+
+table p {
+  color: var(--gray);
+  font-size: 0.8em;
 }
 
 hr {

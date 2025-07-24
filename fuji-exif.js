@@ -364,6 +364,8 @@ function parseFujifilmExif(exifData) {
 }
 
 function normalizeFujifilmExif(exifData) {
+  if (!exifData) return;
+
   const normalized = {};
 
   for (const tag in exifData) {

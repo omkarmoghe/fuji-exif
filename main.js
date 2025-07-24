@@ -1,8 +1,9 @@
 const SKIP_TAGS = ["MakerNote", "UserComment", "Thumbnail"];
 
 const dropZone = document.getElementById("image-dropzone");
-const imageData = document.getElementById("image-data");
 const preview = document.getElementById("image-preview");
+const fujifilmData = document.getElementById("fujifilm-data");
+const imageData = document.getElementById("image-data");
 
 // Prevent default drag behaviors
 ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
@@ -20,33 +21,6 @@ const preview = document.getElementById("image-preview");
   );
 });
 
-function updateImageData(exifData) {
-  // Clear previous data
-  imageData.innerHTML = "";
-
-  // Add each EXIF property as a table row
-  Object.keys(exifData)
-    .sort()
-    .forEach((tag) => {
-      const value = exifData[tag];
-      if (SKIP_TAGS.includes(tag)) return;
-      if (value === undefined || value === null) return;
-
-      const row = document.createElement("tr");
-      const keyCell = document.createElement("td");
-      keyCell.textContent = tag
-        .replace(/([a-z])([A-Z])/g, "$1 $2")
-        .toUpperCase();
-
-      const valueCell = document.createElement("td");
-      valueCell.textContent = value.toString();
-
-      row.appendChild(keyCell);
-      row.appendChild(valueCell);
-      imageData.appendChild(row);
-    });
-}
-
 function updatePreview(file) {
   if (file) {
     preview.src = URL.createObjectURL(file);
@@ -56,31 +30,67 @@ function updatePreview(file) {
   }
 }
 
+function updateImageData(exifData) {
+  imageData.innerHTML = "";
+
+  if (exifData) {
+    // Add each EXIF property as a table row
+    Object.keys(exifData)
+      .sort()
+      .forEach((tag) => {
+        const value = exifData[tag];
+        if (SKIP_TAGS.includes(tag)) return;
+        if (value === undefined || value === null) return;
+
+        const row = document.createElement("tr");
+        const keyCell = document.createElement("td");
+        keyCell.textContent = tag
+          .replace(/([a-z])([A-Z])/g, "$1 $2")
+          .toUpperCase();
+
+        const valueCell = document.createElement("td");
+        valueCell.textContent = value.toString();
+
+        row.appendChild(keyCell);
+        row.appendChild(valueCell);
+        imageData.appendChild(row);
+      });
+  } else {
+    const noDataText = document.createElement("p");
+    noDataText.textContent = "No EXIF data found.";
+    imageData.appendChild(noDataText);
+  }
+}
+
 function updateFujifilmData(exifData) {
-  // Clear previous data
-  const fujifilmData = document.getElementById("fujifilm-data");
   fujifilmData.innerHTML = "";
 
-  // Add each Fujifilm EXIF property as a table row
-  Object.keys(exifData)
-    .sort()
-    .forEach((tag) => {
-      const value = exifData[tag];
-      if (value === undefined || value === null) return;
+  if (exifData) {
+    // Add each Fujifilm EXIF property as a table row
+    Object.keys(exifData)
+      .sort()
+      .forEach((tag) => {
+        const value = exifData[tag];
+        if (value === undefined || value === null) return;
 
-      const row = document.createElement("tr");
-      const keyCell = document.createElement("td");
-      keyCell.textContent = tag
-        .replace(/([a-z])([A-Z])/g, "$1 $2")
-        .toUpperCase();
+        const row = document.createElement("tr");
+        const keyCell = document.createElement("td");
+        keyCell.textContent = tag
+          .replace(/([a-z])([A-Z])/g, "$1 $2")
+          .toUpperCase();
 
-      const valueCell = document.createElement("td");
-      valueCell.textContent = value.toString();
+        const valueCell = document.createElement("td");
+        valueCell.textContent = value.toString();
 
-      row.appendChild(keyCell);
-      row.appendChild(valueCell);
-      fujifilmData.appendChild(row);
-    });
+        row.appendChild(keyCell);
+        row.appendChild(valueCell);
+        fujifilmData.appendChild(row);
+      });
+  } else {
+    const noDataText = document.createElement("p");
+    noDataText.textContent = "No Fujifilm EXIF data found.";
+    fujifilmData.appendChild(noDataText);
+  }
 }
 
 function processFile(file) {
@@ -97,12 +107,8 @@ function processFile(file) {
       updateImageData(exifData);
 
       const fujifilmExifData = parseFujifilmExif(exifData);
-      if (!!fujifilmExifData) {
-        const normalizedFujifilmData = normalizeFujifilmExif(fujifilmExifData);
-        updateFujifilmData(normalizedFujifilmData);
-      } else {
-        console.warn("No Fujifilm EXIF data found");
-      }
+      const normalizedFujifilmData = normalizeFujifilmExif(fujifilmExifData);
+      updateFujifilmData(normalizedFujifilmData);
     };
 
     reader.readAsArrayBuffer(file);
