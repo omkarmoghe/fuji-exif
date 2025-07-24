@@ -23,7 +23,7 @@ body {
   font-optical-sizing: auto;
   font-weight: 300;
   font-style: normal;
-  font-size: 32px;
+  font-size: 38px;
 
   color: var(--white);
   background: var(--black);
@@ -129,7 +129,6 @@ table td:last-child {
 
 table p {
   color: var(--gray);
-  font-size: 0.8em;
 }
 
 hr {
@@ -143,7 +142,6 @@ hr {
   width: 100%;
   text-align: center;
   padding: 1em;
-  font-size: 0.5em;
   color: var(--gray);
 }
 
