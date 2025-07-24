@@ -235,12 +235,8 @@ function parseFujifilmExif(exifData) {
   }
 }
 
-// Handle dropped files
-dropZone.addEventListener("drop", (e) => {
-  const files = e.dataTransfer.files;
-
-  if (files.length > 0 && files[0].type.startsWith("image/")) {
-    const file = files[0];
+function processFile(file) {
+  if (file && file.type.startsWith("image/")) {
     const reader = new FileReader();
 
     reader.onload = function (event) {
@@ -252,11 +248,34 @@ dropZone.addEventListener("drop", (e) => {
       updateThumbnail(exifData);
       updateImageData(exifData);
       const fxf = parseFujifilmExif(exifData);
-      debugger;
+      debugger; // TODO
     };
 
     reader.readAsArrayBuffer(file);
   } else {
-    alert("Please drop an image file.");
+    alert("Please select an image file.");
   }
+}
+
+// Handle dropped files
+dropZone.addEventListener("drop", (e) => {
+  const file = e.dataTransfer.files[0];
+  processFile(file);
+});
+
+// Handle click to open file dialog
+dropZone.addEventListener("click", () => {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "image/*";
+  input.style.display = "none";
+
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    processFile(file);
+  };
+
+  document.body.appendChild(input);
+  input.click();
+  document.body.removeChild(input);
 });

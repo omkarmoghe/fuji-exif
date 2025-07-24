@@ -61,6 +61,7 @@ p {
   border: 1px dashed var(--mint);
   border-radius: 16px;
   padding: 1em 1em;
+  cursor: pointer;
 
   color: var(--gray);
   text-align: center;
@@ -84,20 +85,22 @@ table {
   border-collapse: collapse;
 }
 
-#image-data tr {
+table tr {
   border-bottom: 1px dotted var(--gray);
 }
 
-#image-data td:first-child {
+table td:first-child {
   text-align: left;
   color: var(--gray);
-  width: 30%;
+  width: 35%;
   font-weight: 300;
+  padding-left: 1em;
 }
 
-#image-data td:last-child {
+table td:last-child {
   text-align: right;
   word-wrap: break-word;
   overflow-wrap: break-word;
-  width: 70%;
+  width: 65%;
+  padding-right: 1em;
 }
