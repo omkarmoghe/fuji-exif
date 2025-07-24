@@ -25,22 +25,26 @@ function updateImageData(exifData) {
   imageData.innerHTML = "";
 
   // Add each EXIF property as a table row
-  for (const tag in exifData) {
-    const value = exifData[tag];
-    if (SKIP_TAGS.includes(tag)) continue;
-    if (value === undefined || value === null) continue;
+  Object.keys(exifData)
+    .sort()
+    .forEach((tag) => {
+      const value = exifData[tag];
+      if (SKIP_TAGS.includes(tag)) return;
+      if (value === undefined || value === null) return;
 
-    const row = document.createElement("tr");
-    const keyCell = document.createElement("td");
-    keyCell.textContent = tag.replace(/([a-z])([A-Z])/g, "$1 $2").toUpperCase();
+      const row = document.createElement("tr");
+      const keyCell = document.createElement("td");
+      keyCell.textContent = tag
+        .replace(/([a-z])([A-Z])/g, "$1 $2")
+        .toUpperCase();
 
-    const valueCell = document.createElement("td");
-    valueCell.textContent = value.toString();
+      const valueCell = document.createElement("td");
+      valueCell.textContent = value.toString();
 
-    row.appendChild(keyCell);
-    row.appendChild(valueCell);
-    imageData.appendChild(row);
-  }
+      row.appendChild(keyCell);
+      row.appendChild(valueCell);
+      imageData.appendChild(row);
+    });
 }
 
 function updatePreview(file) {

@@ -21,7 +21,7 @@ body {
   box-sizing: border-box;
   font-family: "JetBrains Mono", monospace;
   font-optical-sizing: auto;
-  font-weight: 400;
+  font-weight: 300;
   font-style: normal;
   font-size: 32px;
 
@@ -36,21 +36,37 @@ body {
 
 h1 {
   font-size: 2.5em;
+  font-weight: 300;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
 }
 
 h2 {
   font-size: 2em;
+  font-weight: 300;
+  margin-top: 0.4em;
+  margin-bottom: 0.4em;
 }
 
 h3 {
   font-size: 1.5em;
+  font-weight: 300;
+  margin-top: 0.25em;
+  margin-bottom: 0.25em;
 }
 
 p {
   font-size: 1em;
 }
 
+a {
+  color: inherit;
+  text-decoration: underline dotted 1px;
+  text-decoration-color: inherit;
+}
+
 .container {
+  width: 90%;
   max-width: 90%;
   height: auto;
   display: flex;
@@ -98,7 +114,7 @@ table td:first-child {
   text-align: left;
   color: var(--gray);
   width: 35%;
-  font-weight: 300;
+  font-weight: 200;
   padding-left: 1em;
 }
 
@@ -110,12 +126,28 @@ table td:last-child {
   padding-right: 1em;
 }
 
-@media only screen and (min-width: 768px) {
+hr {
+  width: 90%;
+  height: 1px;
+  border: none;
+  background: var(--gray);
+}
+
+.footer {
+  width: 100%;
+  text-align: center;
+  padding: 1em;
+  font-size: 0.5em;
+  color: var(--gray);
+}
+
+/* @media screen and (min-width: 768px) {
   body {
     font-size: 24px;
   }
 
   .container {
+    width: 70%;
     max-width: 70%;
   }
-}
+} */

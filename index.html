@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>📷 Fuji EXIF</title>
+    <title>Fuji EXIF</title>
+    <link rel="icon" type="image/x-icon" href="icon.png" />
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -25,19 +26,27 @@
     <div class="container">
       <h1>📷 Fuji EXIF</h1>
       <div id="image-dropzone">
-        <p>Drag and drop an image or click to select a file.</p>
+        <p>📁 Drag and drop an image or click to select a file.</p>
+        <p>🔒 Your image and EXIF data never leave the browser.</p>
       </div>
-      <h3>🖼️ Preview</h3>
+      <h2>🖼️ Preview</h2>
       <img id="image-preview" src="" alt="Image Preview" hidden />
-      <h3>🗻 Fujifilm Data</h3>
+      <h2>🗻 Fujifilm Data</h2>
       <table>
         <tbody id="fujifilm-data"></tbody>
       </table>
-      <h3>🧬 EXIF Data</h3>
+      <h2>🧬 EXIF Data</h2>
       <table>
         <tbody id="image-data"></tbody>
       </table>
-    </div>
+      <hr/>
+      <div class="footer">
+        <p>
+          Made with 🌞 in Los Angeles.
+          👾 <a href="https://github.com/omkarmoghe/fuji-exif">GitHub</a>
+          👨🏽‍💻 <a href="https://omkr.dev">About</a>
+        </p>
+      </div>
   </body>
 
   <script src="main.js"></script>
