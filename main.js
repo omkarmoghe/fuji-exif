@@ -1,4 +1,4 @@
-const SKIP_TAGS = ["MakerNote", "UserComment", "Thumbnail"];
+const SKIP_TAGS = ["MakerNote", "UserComment", "thumbnail", "undefined"];
 
 const dropZone = document.getElementById("image-dropzone");
 const preview = document.getElementById("image-preview");
@@ -30,6 +30,23 @@ function updatePreview(file) {
   }
 }
 
+function buildExifRow(tag, value) {
+  const row = document.createElement("div");
+  row.classList.add("exif-row");
+
+  const keyCell = document.createElement("span");
+  keyCell.classList.add("exif-key");
+  keyCell.textContent = tag.replace(/([a-z])([A-Z])/g, "$1 $2").toUpperCase();
+
+  const valueCell = document.createElement("span");
+  valueCell.classList.add("exif-value");
+  valueCell.textContent = value.toString();
+
+  row.append(keyCell, valueCell);
+
+  return row;
+}
+
 function updateImageData(exifData) {
   imageData.innerHTML = "";
 
@@ -42,17 +59,7 @@ function updateImageData(exifData) {
         if (SKIP_TAGS.includes(tag)) return;
         if (value === undefined || value === null) return;
 
-        const row = document.createElement("tr");
-        const keyCell = document.createElement("td");
-        keyCell.textContent = tag
-          .replace(/([a-z])([A-Z])/g, "$1 $2")
-          .toUpperCase();
-
-        const valueCell = document.createElement("td");
-        valueCell.textContent = value.toString();
-
-        row.appendChild(keyCell);
-        row.appendChild(valueCell);
+        const row = buildExifRow(tag, value);
         imageData.appendChild(row);
       });
   } else {
@@ -73,17 +80,7 @@ function updateFujifilmData(exifData) {
         const value = exifData[tag];
         if (value === undefined || value === null) return;
 
-        const row = document.createElement("tr");
-        const keyCell = document.createElement("td");
-        keyCell.textContent = tag
-          .replace(/([a-z])([A-Z])/g, "$1 $2")
-          .toUpperCase();
-
-        const valueCell = document.createElement("td");
-        valueCell.textContent = value.toString();
-
-        row.appendChild(keyCell);
-        row.appendChild(valueCell);
+        const row = buildExifRow(tag, value);
         fujifilmData.appendChild(row);
       });
   } else {
