@@ -123,11 +123,13 @@ a {
   font-weight: 200;
   word-wrap: break-word;
   overflow-wrap: break-word;
+  text-align: left;
 }
 
 .exif-value {
   word-wrap: break-word;
   overflow-wrap: break-word;
+  text-align: right;
 }
 
 hr {
