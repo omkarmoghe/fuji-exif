@@ -67,6 +67,10 @@ a {
   text-decoration-color: inherit;
 }
 
+.text-gray {
+  color: var(--gray);
+}
+
 .container {
   width: 90%;
   max-width: 90%;
@@ -85,7 +89,6 @@ a {
   padding: 1em 1em;
   cursor: pointer;
 
-  color: var(--gray);
   text-align: center;
 }
 
@@ -105,7 +108,6 @@ a {
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  padding: 1em 1em;
 }
 
 .exif-row {
@@ -119,7 +121,6 @@ a {
 }
 
 .exif-key {
-  color: var(--gray);
   font-weight: 200;
   word-wrap: break-word;
   overflow-wrap: break-word;
@@ -144,5 +145,4 @@ hr {
   width: 100%;
   text-align: center;
   padding: 1em;
-  color: var(--gray);
 }

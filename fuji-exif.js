@@ -248,23 +248,40 @@ const FUJIFILM_EXIF_VALUE_MAP = {
     32: "Large",
   },
   "Exif.Fujifilm.FilmMode": {
-    0: "F0 / Provia / Standard",
-    256: "F1 / Studio Portrait",
-    272: "F1a / Studio Portrait Enhanced Saturation",
-    288: "F1b / Studio Portrait Smooth Skin Tone (Astia)",
-    304: "F1c / Studio Portrait Increased Sharpness",
-    512: "F2 / Fujichrome (Velvia)",
-    768: "F3 / Studio Portrait EX",
-    1024: "F4 / Velvia",
-    1280: "F5 / Pro Neg. Standard",
-    1281: "F6 / Pro Neg. Hi",
-    1536: "F7 / Classic Chrome",
-    1792: "F8 / Eterna",
-    2048: "F9 / Classic Negative",
-    2304: "F10 / Bleach Bypass",
-    2560: "F11 / Nostalgic Negative",
+    0: "Provia/Standard",
+    256: " Studio Portrait",
+    272: " Studio Portrait Enhanced Saturation",
+    288: " Studio Portrait Smooth Skin Tone (Astia)",
+    304: " Studio Portrait Increased Sharpness",
+    512: " Fujichrome (Velvia)",
+    768: " Studio Portrait EX",
+    1024: " Velvia",
+    1280: " Pro Neg. Standard",
+    1281: " Pro Neg. Hi",
+    1536: " Classic Chrome",
+    1792: " Eterna",
+    2048: " Classic Negative",
+    2304: " Bleach Bypass",
+    2560: " Nostalgic Negative",
   },
 };
+
+const FUJIFILM_EXIF_FILM_SIMULATION_TAGS = new Set([
+  "Exif.Fujifilm.FilmMode",
+  "Exif.Fujifilm.GrainEffectRoughness",
+  "Exif.Fujifilm.GrainEffectSize",
+  "Exif.Fujifilm.ColorChromeEffect",
+  "Exif.Fujifilm.ColorChromeFXBlue",
+  "Exif.Fujifilm.WhiteBalance",
+  "Exif.Fujifilm.WhiteBalanceFineTune",
+  "Exif.Fujifilm.DynamicRange",
+  "Exif.Fujifilm.HighlightTone",
+  "Exif.Fujifilm.ShadowTone",
+  "Exif.Fujifilm.Color",
+  "Exif.Fujifilm.Sharpness",
+  "Exif.Fujifilm.HighIsoNoiseReduction",
+  "Exif.Fujifilm.Clarity",
+]);
 
 function parseFujifilmExif(exifData) {
   const OFFSET = 12;
@@ -374,18 +391,16 @@ function normalizeFujifilmExif(exifData) {
     const value = exifData[tag];
     if (value === undefined || value === null) continue;
 
-    const normalizedTag = tag.split(".").pop();
-
     // Map known tags to human-readable values
     if (FUJIFILM_EXIF_VALUE_MAP[tag]) {
       const mapping = FUJIFILM_EXIF_VALUE_MAP[tag];
 
-      normalized[normalizedTag] =
+      normalized[tag] =
         typeof mapping === "function"
           ? mapping(value)
           : mapping[value] || value;
     } else {
-      normalized[normalizedTag] = value;
+      normalized[tag] = value;
     }
   }
 

@@ -2,7 +2,13 @@ const SKIP_TAGS = ["MakerNote", "UserComment", "thumbnail", "undefined"];
 
 const dropZone = document.getElementById("image-dropzone");
 const preview = document.getElementById("image-preview");
+const fujifilmDataContainer = document.getElementById(
+  "fujifilm-data-container"
+);
 const fujifilmData = document.getElementById("fujifilm-data");
+const fujifilmFilmSimulationData = document.getElementById(
+  "fujifilm-film-simulation-data"
+);
 const imageData = document.getElementById("image-data");
 
 // Prevent default drag behaviors
@@ -35,8 +41,12 @@ function buildExifRow(tag, value) {
   row.classList.add("exif-row");
 
   const keyCell = document.createElement("span");
-  keyCell.classList.add("exif-key");
-  keyCell.textContent = tag.replace(/([a-z])([A-Z])/g, "$1 $2").toUpperCase();
+  keyCell.classList.add("exif-key", "text-gray");
+  keyCell.textContent = tag
+    .split(".")
+    .pop()
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .toUpperCase();
 
   const valueCell = document.createElement("span");
   valueCell.classList.add("exif-value");
@@ -70,9 +80,12 @@ function updateImageData(exifData) {
 }
 
 function updateFujifilmData(exifData) {
+  fujifilmFilmSimulationData.innerHTML = "";
   fujifilmData.innerHTML = "";
 
   if (exifData) {
+    fujifilmDataContainer.hidden = false;
+
     // Add each Fujifilm EXIF property as a table row
     Object.keys(exifData)
       .sort()
@@ -81,12 +94,17 @@ function updateFujifilmData(exifData) {
         if (value === undefined || value === null) return;
 
         const row = buildExifRow(tag, value);
-        fujifilmData.appendChild(row);
+
+        console.log("tag:", tag);
+        if (FUJIFILM_EXIF_FILM_SIMULATION_TAGS.has(tag)) {
+          fujifilmFilmSimulationData.appendChild(row);
+        } else {
+          fujifilmData.appendChild(row);
+        }
       });
   } else {
-    const noDataText = document.createElement("p");
-    noDataText.textContent = "No Fujifilm EXIF data found.";
-    fujifilmData.appendChild(noDataText);
+    fujifilmDataContainer.hidden = true;
+    console.log("No Fujifilm EXIF data found.");
   }
 }
 
