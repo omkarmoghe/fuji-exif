@@ -151,13 +151,14 @@ const FUJIFILM_EXIF_VALUE_MAP = {
   },
   "Exif.Fujifilm.WhiteBalanceFineTune": (value) => {
     if (Array.isArray(value) && value.length >= 2) {
-      const [r, b] = value;
-      // exiftool encodes red and blue shifts in 1/20-deg steps: raw value /20 :contentReference[oaicite:2]{index=2}
-      return `R ${r / 20 >= 0 ? "+" : ""}${r / 20}, B ${
-        b / 20 >= 0 ? "+" : ""
-      }${b / 20}`;
+      const [r, b] = value.map((v) => v / 20); // Convert from 1/20th degree steps
+      const rFormatted = r > 0 ? `+${r}` : r;
+      const bFormatted = b > 0 ? `+${b}` : b;
+
+      return `R ${rFormatted}, B ${bFormatted}`;
+    } else {
+      return value;
     }
-    return value;
   },
   "Exif.Fujifilm.NoiseReduction": {
     0: "Off",
