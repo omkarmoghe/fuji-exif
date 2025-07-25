@@ -63,7 +63,7 @@ p {
 
 a {
   color: inherit;
-  text-decoration: underline dotted 1px;
+  text-decoration: underline dotted 2px;
   text-decoration-color: inherit;
 }
 
@@ -93,12 +93,16 @@ a {
 }
 
 #image-dropzone.hover {
-  border: 4px solid var(--green);
+  border: 4px solid var(--mint);
 }
 
 #image-preview {
   width: 80%;
   height: auto;
+}
+
+#fujifilm-data-container {
+  display: none;
 }
 
 .exif-table {

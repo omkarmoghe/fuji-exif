@@ -84,7 +84,7 @@ function updateFujifilmData(exifData) {
   fujifilmData.innerHTML = "";
 
   if (exifData) {
-    fujifilmDataContainer.hidden = false;
+    fujifilmDataContainer.style.display = "contents";
 
     // Add each Fujifilm EXIF property as a table row
     Object.keys(exifData)
@@ -95,7 +95,6 @@ function updateFujifilmData(exifData) {
 
         const row = buildExifRow(tag, value);
 
-        console.log("tag:", tag);
         if (FUJIFILM_EXIF_FILM_SIMULATION_TAGS.has(tag)) {
           fujifilmFilmSimulationData.appendChild(row);
         } else {
@@ -103,7 +102,7 @@ function updateFujifilmData(exifData) {
         }
       });
   } else {
-    fujifilmDataContainer.hidden = true;
+    fujifilmDataContainer.style.display = "none";
     console.log("No Fujifilm EXIF data found.");
   }
 }
@@ -140,17 +139,21 @@ dropZone.addEventListener("drop", (e) => {
 
 // Handle click to open file dialog
 dropZone.addEventListener("click", () => {
-  const input = document.createElement("input");
-  input.type = "file";
-  input.accept = "image/*";
-  input.style.display = "none";
+  let input = document.getElementById("image-input");
+  if (!input) {
+    input = document.createElement("input");
+    input.id = "image-input";
+    input.type = "file";
+    input.accept = "image/*";
+    input.hidden = true;
 
-  input.onchange = (e) => {
-    const file = e.target.files[0];
-    processFile(file);
-  };
+    input.onchange = (e) => {
+      const file = e.target.files[0];
+      processFile(file);
+    };
 
-  document.body.appendChild(input);
+    document.body.appendChild(input);
+  }
+
   input.click();
-  document.body.removeChild(input);
 });
