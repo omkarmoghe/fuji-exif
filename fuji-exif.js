@@ -379,6 +379,12 @@ function parseFujifilmExif(exifData) {
           for (let j = 0; j < count; j++) {
             value.push(view.getUint32(start + j * 4, true));
           }
+        } else if (type === 9) {
+          // SLONG array
+          value = [];
+          for (let j = 0; j < count; j++) {
+            value.push(view.getInt32(start + j * 4, true));
+          }
         } else {
           // Just return raw bytes
           value = [...uint8Array.slice(start, start + totalBytes)];
